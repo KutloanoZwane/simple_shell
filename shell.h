@@ -9,7 +9,7 @@
 #include <sys/types.h>
 
 #define  MAX_COMMAND_LENGHT 50
-#define MAX_ARGS 10
+#define MAX_ARGS 20
 #define MAX_PATH_LENGTH 100
 
 
@@ -20,9 +20,6 @@ void execCmd(char *cmd, char *argv[], char *path);
 void printEnv(void);
 void execAbsoluteCmd(char *cmd, char *argv[]);
 void execCmdInPath(char *cmd, char *argv[], char *path);
-
-void user_prompt(void);
-int main(void);
 
 void user_prompt(void);
 int main(void);
