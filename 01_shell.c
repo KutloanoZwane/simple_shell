@@ -1,54 +1,56 @@
-#include <shell.h>
+#include "shell.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <sys/types.h>
 
-#define  MAX_COMMAND_LENGHT 100
+#define  MAX_COMMAND_LENGTH 50
 
 /**
- * user_prompt: prints out the shell prompt for user to enter command.
- * fflush(): Flush the output buffer to display the prompt immediately.
- * return: NULL.
+ * user_prompt - Displays the shell prompt for user input.
+ *
+ * This function prints the shell prompt "#" and flushes the output buffer.
+ * Parameters: None
+ * Returns: None
  */
 
 void user_prompt(void)
 {
-	char prompt[] = "$ ";
-
-	write(STDOUT_FILENO, prompt, sizeof(promp) - 1);
+	printf("# ");
 	fflush(stdout);
 }
 
 /**
- * main: entry point for the program.
- * command : character array that stores the command entered by the user.
- * fgets() : Reads the command entered by the user from standard input.
- * lenght : lenght of the user command input
- * process_id : child process.
- * argc : array with the command and a NULL terminator.
- * eden : array as the environment variable array.
- * stats: status information of the child process.
- * return : NULL
+ * main - Entry point of the program.
+ *
+ * Reads user input, executes commands, and manages the shell.
+ * Return: 0 on successful execution.
  */
+
 int main(void)
 {
-	char command[MAX_COMMAND_LENGHT];
+	char command[MAX_COMMAND_LENGTH];
 
 	while (1)
 	{
 		user_prompt();
 
-		if (fgets(command, MAX_COMMAND_LENGHT, stdin) == NULL)
+		if (fgets(command, MAX_COMMAND_LENGTH, stdin) == NULL)
 		{
-			if (feof(stdout))
+			if (feof(stdin))
 			{
 				printf("\n");
 				break;
 			}
 		}
 
-		int lenght = strlen(command);
+		int length = strlen(command);
 
-		if (lenght > 0 && command[lenght - 1] == '\n')
+		if (length > 0 && command[length - 1] == '\n')
 		{
-			command[lenght - 1] = '\0';
+			command[length - 1] = '\0';
 		}
 
 		pid_t process_id = fork();
@@ -57,6 +59,23 @@ int main(void)
 		{
 			perror("fork");
 			exit(EXIT_FAILURE);
+		}
+		else if (process_id == 0)
+		{
+			char *argu[] = {command, NULL};
+			char *eden[] = {NULL};
+
+			if (execve(command, argu, eden) == -1)
+			{
+				perror("execve");
+				exit(EXIT_FAILURE);
+			}
+		}
+		else
+		{
+			int stats;
+
+			waitpid(process_id, &stats, 0);
 		}
 	}
 
