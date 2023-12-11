@@ -20,14 +20,11 @@ void execCmd(char *cmd, char *argv[], char *path);
 void printEnv(void);
 void execAbsoluteCmd(char *cmd, char *argv[]);
 void execCmdInPath(char *cmd, char *argv[], char *path);
-<<<<<<< HEAD
 int _getline(data_of_program *data);
-=======
 
 int check_logic_ops(char *array_commands[], int i, char array_operators[]);
 int _getline(data_of_program *data);
 
->>>>>>> 955bcbe7c2e6119835a7f740457c7f91ffd169e3
 void user_prompt(void);
 int main(void);
 
