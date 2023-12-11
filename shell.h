@@ -20,7 +20,7 @@ void execCmd(char *cmd, char *argv[], char *path);
 void printEnv(void);
 void execAbsoluteCmd(char *cmd, char *argv[]);
 void execCmdInPath(char *cmd, char *argv[], char *path);
-
+int _getline(data_of_program *data);
 void user_prompt(void);
 int main(void);
 
