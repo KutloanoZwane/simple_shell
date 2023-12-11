@@ -21,6 +21,9 @@ void printEnv(void);
 void execAbsoluteCmd(char *cmd, char *argv[]);
 void execCmdInPath(char *cmd, char *argv[], char *path);
 
+int check_logic_ops(char *array_commands[], int i, char array_operators[]);
+int _getline(data_of_program *data);
+
 void user_prompt(void);
 int main(void);
 
