@@ -6,7 +6,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#define  MAX_COMMAND_LENGTH 50
+#define MAX_COMMAND_LENGTH 50
+#define MAX_ARGUMENTS 10
 
 /**
  * user_prompt - Displays the shell prompt for user input.
@@ -18,8 +19,8 @@
 
 void user_prompt(void)
 {
-	printf("# ");
-	fflush(stdout);
+    printf("# ");
+    fflush(stdout);
 }
 
 /**
@@ -31,53 +32,60 @@ void user_prompt(void)
 
 int main(void)
 {
-	char command[MAX_COMMAND_LENGTH];
+    char command[MAX_COMMAND_LENGTH];
+    int length = strlen(command);
+    pid_t process_id = fork();
 
-	while (1)
-	{
-		user_prompt();
+    while (1)
+    {
+        user_prompt();
 
-		if (fgets(command, MAX_COMMAND_LENGTH, stdin) == NULL)
-		{
-			if (feof(stdin))
-			{
-				printf("\n");
-				break;
-			}
-		}
+        if (fgets(command, MAX_COMMAND_LENGTH, stdin) == NULL)
+        {
+            if (feof(stdin))
+            {
+                printf("\n");
+                break;
+            }
+        }
 
-		int length = strlen(command);
+        if (length > 0 && command[length - 1] == '\n')
+        {
+            command[length - 1] = '\0';
+        }
 
-		if (length > 0 && command[length - 1] == '\n')
-		{
-			command[length - 1] = '\0';
-		}
+        if (process_id == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        else if (process_id == 0)
+        {
+            char *args[MAX_ARGUMENTS];
+            char *token = strtok(command, " ");
 
-		pid_t process_id = fork();
+            int arg_count = 0;
+            while (token != NULL && arg_count < MAX_ARGUMENTS - 1)
+            {
+                args[arg_count] = token;
+                token = strtok(NULL, " ");
+                arg_count++;
+            }
 
-		if (process_id == -1)
-		{
-			perror("fork");
-			exit(EXIT_FAILURE);
-		}
-		else if (process_id == 0)
-		{
-			char *argu[] = {command, NULL};
-			char *eden[] = {NULL};
+            args[arg_count] = NULL;
 
-			if (execve(command, argu, eden) == -1)
-			{
-				perror("execve");
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			int stats;
+            if (execvp(args[0], args) == -1)
+            {
+                perror("execvp");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else
+        {
+            int status;
+            waitpid(process_id, &status, 0);
+        }
+    }
 
-			waitpid(process_id, &stats, 0);
-		}
-	}
-
-	return (0);
+    return 0;
 }

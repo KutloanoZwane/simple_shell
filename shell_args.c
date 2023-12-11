@@ -19,6 +19,9 @@ int main(void)
 {
 	char command[MAX_COMMAND_LENGTH];
 	char *argu[MAX_ARGS + 1];
+	char *dtoken = strtok(command, " ");
+	int argCount = 0;
+	pid_t process_id = fork();
 
 	while (1)
 	{
@@ -38,9 +41,6 @@ int main(void)
 			continue;
 		}
 
-		char *dtoken = strtok(command, " ");
-		int argCount = 0;
-
 		while (dtoken != NULL && argCount < MAX_ARGS)
 		{
 			argu[argCount] = dtoken;
@@ -48,8 +48,6 @@ int main(void)
 			argCount++;
 		}
 		argu[argCount] = NULL;
-
-		pid_t process_id = fork();
 		
 		if (process_id < 0)
 		{
