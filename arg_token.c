@@ -86,7 +86,8 @@ int check_logic_ops(char *array_commands[], int i, char array_operators[])
 		}
 	}
 	return (i);
-=======
+}
+
 #include "shell.h"
 #include <string.h>
 #include <stdlib.h>
@@ -101,22 +102,20 @@ int check_logic_ops(char *array_commands[], int i, char array_operators[])
 
 void tokenizeCmd(char *cmd, char *argv[], int *argc)
 {
+	char delimiter[] = " ;";
+	char *token;
+	*argc = 0;
 
-char delimiter[] = " ;";
-char *token;
-*argc = 0;
-while ((token = strsep(&cmd, delimiter)) != NULL)
-{
-if (*token != '\0')
-{
-argv[(*argc)++] = token;
-if (*argc >= MAX_ARGS - 1)
-{
-break;
-}
-}
-}
-
-argv[*argc] = NULL;
->>>>>>> 5bd8f6d68734e47e145fb92cdbd32684bbe8e4ea
+	while ((token = strsep(&cmd, delimiter)) != NULL)
+	{
+		if (*token != '\0')
+		{
+			argv[(*argc)++] = token;
+			if (*argc >= MAX_ARGS - 1)
+			{
+				break;
+			}
+		}
+	}
+	argv[*argc] = NULL;
 }
