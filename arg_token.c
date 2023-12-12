@@ -28,4 +28,5 @@ void tokenizeCmd(char *cmd, char *argv[], int *argc)
 
 		}
 		argv[*argc] = NULL;
+	}
 }
