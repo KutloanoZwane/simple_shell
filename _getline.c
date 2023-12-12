@@ -1,6 +1,9 @@
 #include "shell.h"
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+char *str_duplicate(const char *str);
 
 /**
 * _getline - read a line from the user prompt.
@@ -30,7 +33,7 @@ int _getline(data_of_program *data)
 
 		i = 0;
 		do {
-			array_commands[i] = str_duplicate(_strtok(i ? NULL : buff, "\n;"));
+			array_commands[i] = str_duplicate(strtok(i ? NULL : buff, "\n;"));
 
 			i = check_logic_ops(array_commands, i, array_operators);
 		}
@@ -45,7 +48,7 @@ int _getline(data_of_program *data)
 		array_operators[i] = array_operators[i + 1];
 	}
 
-	return (str_length(data->input_line));
+	return (strlen(data->input_line));
 }
 
 
