@@ -5,14 +5,10 @@
 
 /**
  * printEnv - Function that displays the environment variables
- *
- * Function that displays a list of special notes called environment
- * variables visible to the computer.
  * Parameters: 0.
  *
  * Returns: Always 0.
  */
-
 void printEnv(void)
 {
 char **env = environ;
