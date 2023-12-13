@@ -8,8 +8,8 @@
  */
 int main(void)
 {
-        char *nameofShell = "KT_shell";
+	char *nameofShell = "KT_shell";
 
-        prompt(nameofShell);
-        return (0);
+	prompt(nameofShell);
+	return (0);
 }
