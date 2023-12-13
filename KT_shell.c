@@ -36,10 +36,35 @@ void prompt(char *nameofShell)
 		{
 			break;
 		}
-		command[strcspn(command, "\n")] = '\0';
-		handleExitCommand(command);
-		handleEnvCommand(command);
+		command[strcspn(command, "\n")] = '\0;
+		if (strcmp(command, "exit") == 0)
+		{
+			break;
+		}
+		if (strcmp(command, "env") == 0)
+		{
+			printEnv();
+			continue;
+		}
 		tokenizeCmd(command, argv, &argc);
-		execCmd(argv[0], argv, path);
+		child_id = fork();
+		if (child_id == -1)
+		{
+			perror("fork");
+			continue;
+		}
+		else if (child_id == 0)
+		{
+			execCmd(argv[0], argv, path);
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			waitpid(child_id, &status, 0);
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+			{
+				continue;
+			}
+		}
 	}
 }
