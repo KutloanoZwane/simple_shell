@@ -12,63 +12,93 @@
 /**
  * prompt - should display the shell prompt and
  * handle user commands.
- * @NameofShell: Name of the Shell.
+ * @nameofShell: Name of the Shell.
  *
  * Return: Always
  */
 void prompt(char *nameofShell)
 {
-char command[MAX_COMMAND_LENGTH];
-char *argv[MAX_ARGUMENTS];
-char *path = getenv("PATH");
-int argc;
-pid_t child_id;
-int status;
+	char command[MAX_COMMAND_LENGTH];
+	char *argv[MAX_ARGUMENTS];
+	char *path = getenv("PATH");
+	int argc;
+	pid_t child_id;
+	int status;
 
-while (1)
-{
-if (isatty(STDIN_FILENO))
-{
-printf("%s## ", nameofShell);
-fflush(stdout);
+	while (1)
+	{
+		if (isatty(STDIN_FILENO))
+		{
+			printf("%s## ", nameofShell);
+			fflush(stdout);
+		}
+		if (fgets(command, sizeof(command), stdin) == NULL)
+		{
+			break;
+		}
+		command[strcspn(command, "\n")] = '\0';
+		handleExitCommand(command);
+		handleEnvCommand(command);
+		tokenizeCmd(command, argv, &argc);
+		execCmd(argv[0], argv, path);
+	}
 }
-if (fgets(command, sizeof(command), stdin) == NULL)
+/**
+ * printEnv - Function that displays the environment variables
+ * Parameters: 0.
+ *
+ * Returns: Always 0.
+ */
+void printEnv(void)
 {
-break;
+	char **env = environ;
+
+	while (*env != NULL)
+	{
+		printf("%s\n", *env);
+		env++;
+	}
 }
-/* Remove the trailing newline from the command */
-command[strcspn(command, "\n")] = '\0';
-/*  Exit Handling */
-if (strcmp(command, "exit") == 0)
+/**
+ * tokenizeCmd - function that takes a command string and,
+ * splits it into pieces.
+ * @cmd: part of the command string to be split(tokenized)
+ * @argv: the array to store the command tokens.
+ * @argc: a storage for the number of command tokens
+ */
+void tokenizeCmd(char *cmd, char *argv[], int *argc)
 {
-break;
+	char delimiter[] = " ;";
+	char *token;
+	*argc = 0;
+
+	while ((token = strsep(&cmd, delimiter)) != NULL)
+	{
+		if (*token != '\0')
+		{
+			argv[(*argc)++] = token;
+			if (*argc >= MAX_ARGUMENTS - 1)
+			{
+				break;
+			}
+		}
+	}
+
+	argv[*argc] = NULL;
 }
-if (strcmp(command, "env") == 0)
+/**
+ * execCmd - execCmd executes a command
+ * @cmd: user cmd to be executed
+ * @argv: Array of cmd line argument
+ * @path: Directories in PATH environment
+ *
+ */
+void execCmd(char *cmd, char *argv[], char *path)
 {
-printEnv();
-continue;
-}
-/* Tokenize the command into arguments */
-tokenizeCmd(command, argv, &argc);
-/* Execute the command */
-child_id = fork();
-if (child_id == -1)
-{
-perror("fork");
-continue;
-}
-else if (child_id == 0)
-{
-execCmd(argv[0], argv, path);
-exit(EXIT_FAILURE);
-}
-else
-{
-waitpid(child_id, &status, 0);
-if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-{
-continue;
-}
-}
-}
+	if (cmd != NULL && argv != NULL)
+	{
+		(cmd[0] == '/' || cmd[0] == '.') ?
+			execAbsoluteCmd(cmd, argv) :
+			execCmdInPath(cmd, argv, path);
+	}
 }

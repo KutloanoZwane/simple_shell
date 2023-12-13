@@ -22,5 +22,8 @@ void execCmd(char *cmd, char *argv[], char *path);
 void printEnv(void);
 void execAbsoluteCmd(char *cmd, char *argv[]);
 void execCmdInPath(char *cmd, char *argv[], char *path);
+void executeCommand(char *command);
+void handleExitCommand(char *command);
+void handleEnvCommand(char *command);
 
 #endif
